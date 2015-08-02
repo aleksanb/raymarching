@@ -1,0 +1,8 @@
+{
+  "name": "Raymarching",
+  "music": {
+    "path": "res/sd_6.mp3",
+    "bpm": 85,
+    "subdivision": 2
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "type": "rayMarchingLayer",
+    "displayName": "RayMarching",
+    "startFrame": 0,
+    "endFrame": 1000,
+    "color": "pink",
+    "config": {}
+  }
+]
