@@ -10,45 +10,50 @@ float sphere(vec3 p, vec3 sphere, float radius)
 
 float distance(vec3 p)
 {
-  return sphere(p, vec3(.0, .0, .0), 0.5);
+  //p.x = mod(p.x, 5.0) - 2.5;
+
+  return sphere(p, vec3(.0, .0, .0), 4.0);
 }
 
-int castRay(vec3 ro, vec3 rd)
+float castRay(vec3 ro, vec3 rd)
 {
-  float t = 0.0;
+  float closeClippingPlane = 0.0;
+  float farClippingPlane = 40.0;
+
+  float totalDistance = closeClippingPlane;
   const int maxSteps = 32;
   for(int i = 0; i < maxSteps; ++i)
   {
-    vec3 p = ro + rd * t;
+    vec3 p = ro + rd * totalDistance;
     float d = distance(p);
-    if(d < 0.01)
+    if(d < 0.01 || totalDistance > farClippingPlane)
     {
-      return i;
+      break;
     }
 
-    t += d;
+    totalDistance += d;
   }
 
-  return maxSteps;
+  return totalDistance;
 }
 
 void main()
 {
-  vec3 eye = vec3(0, 0, -1);
+  vec3 pos = vec3(0, 0, 10);
   vec3 up = vec3(0, 1, 0);
   vec3 right = vec3(1, 0, 0);
 
-  float u = (vUv.x * 2.0) - 1.0;
-  float v = (vUv.y * 2.0) - 1.0;
+  float far = 20.0;
+  float u = (vUv.x * 16.0) - 8.0;
+  float v = (vUv.y * 9.0) - 4.5;
 
-  vec3 rd = normalize(cross(right, up));
-  vec3 ro = right * u + up * v;
+  vec3 rd = normalize(cross(up, right));
+  vec3 ro = pos + (right * u) + (up * v);
 
-  int depth = castRay(ro, rd);
-
-  vec4 color = vec4(0.0);
-  if (depth < 32) {
-      color = vec4(1.0, 0.5, 0.5, 1.0);
+  float distance = castRay(ro, rd);
+  vec4 color = vec4(1.0);
+  if (distance <= 40.0) {
+    color = vec4(1.0, 0.5, 0.1, 1.0) * distance / 10.0;
   }
 
   gl_FragColor = color;
