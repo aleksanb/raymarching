@@ -1,4 +1,5 @@
 {
+    "cameraPathPosition": { "type": "v3", "value": null },
     "tDiffuse": { "type": "t", "value": null },
     "time": { "type": "f", "value": null }
 }

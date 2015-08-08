@@ -1,2 +1,13 @@
 {
+  "rayMarchingLayer": {
+    "position": [
+      {
+        "startFrame": 0,
+        "endFrame": 1000,
+        "point": [
+          [0.0, 0.0, 0.0]
+        ]
+      }
+    ]
+  }
 }

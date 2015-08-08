@@ -1,3 +1,4 @@
+uniform vec3 cameraPathPosition;
 uniform float time;
 uniform sampler2D tDiffuse;
 
@@ -58,7 +59,7 @@ vec3 calculateNormal(vec3 pos) {
 
 void main()
 {
-  vec3 eye = vec3(0, 0, 10);
+  vec3 eye = cameraPathPosition;
   vec3 up = vec3(0, 1, 0);
   vec3 right = vec3(1, 0, 0);
 
