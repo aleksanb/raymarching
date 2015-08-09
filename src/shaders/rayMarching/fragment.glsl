@@ -28,16 +28,13 @@ float distance(vec3 p)
 
 float castRay(vec3 ro, vec3 rd)
 {
-  float closeClippingPlane = 0.0;
-  float farClippingPlane = 40.0;
-
-  float totalDistance = closeClippingPlane;
+  float totalDistance = 0.0;
   const int maxSteps = 32;
   for(int i = 0; i < maxSteps; ++i)
   {
     vec3 p = ro + rd * totalDistance;
     float d = distance(p);
-    if(d < 0.01 || totalDistance > farClippingPlane)
+    if(d < 0.01)
     {
       break;
     }
@@ -62,11 +59,13 @@ void main()
 {
   float x = (vUv.x * 16.0) - 8.0;
   float y = (vUv.y * 9.0) - 4.5;
+  float fov = 9.0;
 
   vec3 up = vec3(0.0, 1.0, 0.0);
   vec3 right = cross(forward, up);
 
-  vec3 rayOrigin = eye + (right * x) + (up * y);
+  vec3 rayOrigin = eye + (right * x) + (up * y) + (forward * fov);
+  vec3 rayDestination = normalize(rayOrigin - eye);
 
   vec3 light = normalize(
     vec3(
@@ -74,7 +73,8 @@ void main()
       5.0 * sin(sin(time / 40.0)),
       5.0 * cos(time / 50.0)));
 
-  float distance = castRay(rayOrigin, forward);
+  float farClippingPlane = 100.0;
+  float distance = castRay(rayOrigin, rayDestination);
 
   // Surface normal
   vec3 pos = rayOrigin + forward * distance;
@@ -83,7 +83,7 @@ void main()
 
   vec4 color = vec4(1.0, 0.5, 0.1, 1.0);
   color += diffusion * vec4(0.9, 0.5, 0.5, 1.0);
-  if (distance > 40.0) {
+  if (distance > farClippingPlane) {
     color = vec4(0.0);
   }
 
