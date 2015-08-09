@@ -3,8 +3,7 @@
     "type": "rayMarchingLayer",
     "displayName": "RayMarching",
     "startFrame": 0,
-    "endFrame": 1404,
-    "color": "pink",
+    "endFrame": 2397,
     "config": {}
   }
 ]

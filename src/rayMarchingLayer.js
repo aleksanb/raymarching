@@ -9,8 +9,11 @@ function rayMarchingLayer(layer) {
   this.cameraController.updateCamera(0);
   this.camera = this.cameraController.camera;
 
-  this.shaderPass.uniforms.cameraPathPosition.value =
-    this.camera.position;
+  this.shaderPass.uniforms.eye.value = this.camera.position;
+
+  var vector = new THREE.Vector3( 0, 0, -1 );
+  var forward = vector.applyQuaternion(this.camera.quaternion).normalize();
+  this.shaderPass.uniforms.forward.value = forward;
 }
 
 rayMarchingLayer.prototype.getEffectComposerPass = function() {
@@ -25,9 +28,13 @@ rayMarchingLayer.prototype.end = function() {
 
 rayMarchingLayer.prototype.update = function(frame, relativeFrame) {
   this.shaderPass.uniforms.time.value = relativeFrame;
+
   this.cameraController.updateCamera(relativeFrame);
-  this.shaderPass.uniforms.cameraPathPosition.value =
-    this.camera.position;
+  this.shaderPass.uniforms.eye.value = this.camera.position;
+
+  var vector = new THREE.Vector3( 0, 0, -1 );
+  var forward = vector.applyQuaternion(this.camera.quaternion).normalize();
+  this.shaderPass.uniforms.forward.value = forward;
 };
 
 rayMarchingLayer.prototype.resize = function() {

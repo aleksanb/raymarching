@@ -1,4 +1,5 @@
-uniform vec3 cameraPathPosition;
+uniform vec3 eye;
+uniform vec3 forward;
 uniform float time;
 uniform sampler2D tDiffuse;
 
@@ -59,29 +60,26 @@ vec3 calculateNormal(vec3 pos) {
 
 void main()
 {
-  vec3 eye = cameraPathPosition;
-  vec3 up = vec3(0, 1, 0);
-  vec3 right = vec3(1, 0, 0);
+  float x = (vUv.x * 16.0) - 8.0;
+  float y = (vUv.y * 9.0) - 4.5;
 
-  float u = (vUv.x * 16.0) - 8.0;
-  float v = (vUv.y * 9.0) - 4.5;
-  float f = 5.0;
+  vec3 up = vec3(0.0, 1.0, 0.0);
+  vec3 right = cross(forward, up);
 
-  vec3 rd = normalize(cross(up, right));
-  vec3 ro = eye + (right * u) + (up * v);// + (rd * f);
+  vec3 rayOrigin = eye + (right * x) + (up * y);
+
   vec3 light = normalize(
     vec3(
       5.0 * sin(time / 60.0),
       5.0 * sin(sin(time / 40.0)),
       5.0 * cos(time / 50.0)));
 
-  float distance = castRay(ro, rd);
+  float distance = castRay(rayOrigin, forward);
 
   // Surface normal
-  vec3 pos = ro + rd * distance;
+  vec3 pos = rayOrigin + forward * distance;
   vec3 surfaceNormal = calculateNormal(pos);
   float diffusion = 1.5 * clamp(dot(surfaceNormal, light), 0.0, 1.0);
-
 
   vec4 color = vec4(1.0, 0.5, 0.1, 1.0);
   color += diffusion * vec4(0.9, 0.5, 0.5, 1.0);
