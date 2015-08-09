@@ -26,15 +26,16 @@ float distance(vec3 p)
   return min(s, b);
 }
 
-float castRay(vec3 ro, vec3 rd)
+vec2 castRay(vec3 ro, vec3 rd)
 {
   float totalDistance = 0.0;
-  const int maxSteps = 32;
+  const int maxSteps = 64;
+
   for(int i = 0; i < maxSteps; ++i)
   {
     vec3 p = ro + rd * totalDistance;
     float d = distance(p);
-    if(d < 0.01)
+    if(d < 0.01 || totalDistance >= 40.0)
     {
       break;
     }
@@ -42,7 +43,12 @@ float castRay(vec3 ro, vec3 rd)
     totalDistance += d;
   }
 
-  return totalDistance;
+  float material = 1.0;
+  if (totalDistance >= 40.0) {
+    material = 0.0;
+  }
+
+  return vec2(totalDistance, material);
 }
 
 vec3 calculateNormal(vec3 pos) {
@@ -74,20 +80,24 @@ void main()
       5.0 * cos(time / 50.0)));
 
   float farClippingPlane = 100.0;
-  float distance = castRay(rayOrigin, rayDestination);
-
-  // Surface normal
-  vec3 pos = rayOrigin + forward * distance;
-  vec3 surfaceNormal = calculateNormal(pos);
-  float diffusion = 1.5 * clamp(dot(surfaceNormal, light), 0.0, 1.0);
+  vec2 result = castRay(rayOrigin, rayDestination);
+  float distance = result.x;
+  float material = result.y;
 
   vec4 color = vec4(1.0, 0.5, 0.1, 1.0);
-  color += diffusion * vec4(0.9, 0.5, 0.5, 1.0);
-  if (distance > farClippingPlane) {
-    color = vec4(0.0);
+  if (material > 0.0)
+  {
+    // Surface normal
+    vec3 pos = rayOrigin + forward * distance;
+    vec3 surfaceNormal = calculateNormal(pos);
+    float diffusion = 1.5 * clamp(dot(surfaceNormal, light), 0.0, 1.0);
+
+    color += diffusion * vec4(0.9, 0.5, 0.5, 1.0);
+    if (distance > farClippingPlane) {
+      color = vec4(0.0);
+    }
   }
 
-  // Fog
   vec4 fog = vec4(0.5, 0.6, 0.7, 1.0);
   float mixer =  1.0 - exp(-distance * 0.07);
   color = mix(color, fog, mixer);
